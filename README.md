@@ -2,7 +2,7 @@
 
 > A curated collection of production-grade n8n workflows for AI systems, RAG pipelines, conversational agents, and process automation.
 
-**by [Edgar Darío Arteaga Gaytán](https://github.com/DarioArteaga) · AI & LLM Engineer · Zacatecas, México**
+**by [Edgar Darío Arteaga Gaytán](https://www.linkedin.com/in/darioarteaga/a) · AI & LLM Engineer · Zacatecas, México**
 
 ---
 
