@@ -1,0 +1,235 @@
+{
+  "name": "ingest_RAG",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        48
+      ],
+      "id": "bff45c91-cc5d-4401-b339-2a42890e3582",
+      "name": "manual_trigger"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1KkxmtaSw1sm5P7wRHymZxOYtQiI_hNGw",
+          "mode": "list",
+          "cachedResultName": "Base de Conocimientos_ TechNova Solutions ERP.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1KkxmtaSw1sm5P7wRHymZxOYtQiI_hNGw/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        304,
+        48
+      ],
+      "id": "18bb12c0-d8f7-4f2f-9cbc-846606e3fc64",
+      "name": "download_file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vsZlwynisNeki5Is",
+          "name": "Google Drive Personal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documentos_soporte",
+          "mode": "list",
+          "cachedResultName": "documentos_soporte"
+        },
+        "options": {}
+      },
+      "id": "262d1a23-275c-4869-a74f-ce92924bb8ca",
+      "name": "populate_vectorial_db",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        560,
+        48
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "supabaseApi": {
+          "id": "QqUnbF4S8xoWPTlk",
+          "name": "Supabase Personal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "b309a3eb-8da6-4eeb-835c-ed2c3b464f53",
+      "name": "embeddings_3_small",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        528,
+        272
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "QmcCsSkGuGSxi37L",
+          "name": "OpenAI Personal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "id": "f7f29560-a203-408d-9770-995f1c8223ab",
+      "name": "data_loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        656,
+        272
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "id": "b2fbc80d-8aec-4088-ba1f-73d166a4933c",
+      "name": "recursive_character_text_splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        736,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Ejecución manual",
+        "height": 224,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        16,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "05efd2c2-1b99-4b7b-a76f-bad205afa81b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Descarga de archivo en formato `PDF`.",
+        "height": 224,
+        "width": 160,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        272,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "157adc6b-d138-4700-8dfd-65f9bd12b131",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Sistema de carga vectorial consistente en:\n- Base de datos vectorial en Supabase.\n- Modelo de `embeddings`.\n- `Document Loader`.\n- `Text Splitter`.",
+        "height": 704,
+        "width": 480,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        464,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "7b23885e-0dc5-4748-bb28-be50bb0d37d0",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "manual_trigger": {
+      "main": [
+        [
+          {
+            "node": "download_file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download_file": {
+      "main": [
+        [
+          {
+            "node": "populate_vectorial_db",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "embeddings_3_small": {
+      "ai_embedding": [
+        [
+          {
+            "node": "populate_vectorial_db",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "data_loader": {
+      "ai_document": [
+        [
+          {
+            "node": "populate_vectorial_db",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recursive_character_text_splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "data_loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "13ccaa80-c4ba-4290-aaa4-9b1fd48fab89",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2148c11bd9392f64397ae662ec9fcbde733ea0a73464f15d2dd9fd98548c6830"
+  },
+  "id": "tNwjE4g2zeusHIb1",
+  "tags": []
+}
