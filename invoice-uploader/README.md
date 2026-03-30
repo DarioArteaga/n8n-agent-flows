@@ -1,6 +1,6 @@
 # invoice-uploader
 
-> **n8n workflow** — Automated invoice collector: polls Gmail every minute for unread emails with attachments, filters by fiscal keywords, separates each attachment into an individual item, and uploads them to a Google Drive folder. Marks the email as read on success.
+> **n8n workflow** — Automated invoice collector: polls Gmail daily at midnight for unread emails with attachments, filters by fiscal keywords, separates each attachment into an individual item, and uploads them to a Google Drive folder. Marks the email as read on success.
 
 ---
 
@@ -52,7 +52,7 @@ The pipeline handles the full flow from detection to storage:
 │  ┌─────────────────┐    ┌────────────┐                                    │
 │  │ Gmail Nuevos    │───▶│ Es Factura │                                    │
 │  │ Correos         │    │ (IF node)  │                                    │
-│  │ (poll/1 min)    │    └─────┬──────┘                                    │
+│  │ (poll/daily 00:00)    │    └─────┬──────┘                                    │
 │  └─────────────────┘          │                                           │
 │                         true  │  false                                    │
 │                    ┌──────────┘  └──────────────┐                        │
@@ -83,14 +83,14 @@ The pipeline handles the full flow from detection to storage:
 | Property | Value |
 |---|---|
 | Type | `n8n-nodes-base.gmailTrigger` |
-| Poll frequency | Every minute |
+| Poll frequency | Daily at 00:00 |
 | Filter | Unread emails with attachments (`has:attachment`) |
 | Output format | Full message data + binary attachments |
 | Credentials | `gmailOAuth2` |
 
-Polls Gmail every minute for unread messages that contain at least one attachment. The `simple: false` setting returns the full Gmail message object — including headers, body, and binary attachment data — rather than a simplified representation.
+Polls Gmail once a day, at midnight, for unread messages that contain at least one attachment. The `simple: false` setting returns the full Gmail message object — including headers, body, and binary attachment data — rather than a simplified representation.
 
-> ⚠️ One-minute polling is aggressive. See [Limitations](#limitations-en) for rate limit implications.
+> **Note:** Daily polling at midnight means up to a 24-hour delay between email arrival and processing. Suitable for non-time-sensitive invoice collection.
 
 ---
 
@@ -201,7 +201,7 @@ The Gmail OAuth2 credential needs the following scopes:
 |---|---|
 | Workflow engine | n8n (`executionOrder: v1`) |
 | Email source | Gmail (OAuth2, poll trigger) |
-| Poll frequency | Every 1 minute |
+| Poll frequency | Daily at 00:00 |
 | Invoice detection | Regex on subject + body (OR logic) |
 | Attachment handling | JavaScript fan-out (one item per attachment) |
 | File storage | Google Drive (user-configured folder) |
@@ -213,7 +213,7 @@ The Gmail OAuth2 credential needs the following scopes:
 ## Design Decisions
 
 ### Why polling instead of a push trigger?
-Gmail does not natively support webhooks in n8n without additional setup (Google Pub/Sub). Polling every minute is the simplest approach, at the cost of up-to-60-second latency and continuous API usage.
+Gmail does not natively support webhooks in n8n without additional setup (Google Pub/Sub). Polling once a day at midnight is a deliberate trade-off: it eliminates continuous API usage at the cost of up-to-24-hour latency between email arrival and file upload.
 
 ### Why OR logic on the invoice filter?
 The filter uses OR (subject OR body) to maximize recall — missing a real invoice is worse than processing a false positive. The trade-off is that promotional emails or newsletters mentioning "factura" in their body may slip through. Adjust to AND logic if false positives become a problem.
@@ -252,12 +252,12 @@ Because `Separar Adjuntos` produces one item per attachment, `Mark a message as 
 
 ---
 
-### 🟡 Aggressive Polling Frequency
-Every-minute polling means up to 1,440 Gmail API calls per day just from the trigger, plus additional calls for `markAsRead`. Gmail's API has a quota of 250 units per second and daily limits.
+### 🟡 Up to 24-Hour Processing Latency
+The daily trigger fires once at midnight. An invoice that arrives at 08:00 will not be uploaded until the following midnight run — up to 16 hours later.
 
-**Impact:** In normal usage with low email volume, this is not a problem. Under high volume or on shared OAuth credentials, it can hit rate limits.
+**Impact:** Acceptable for batch accounting workflows and end-of-day reconciliation. Not acceptable if the Drive folder feeds a downstream process that needs invoices available within minutes of receipt.
 
-**Mitigation:** Change the poll interval to every 5 or 15 minutes if near-real-time processing is not required.
+**Mitigation:** If lower latency is needed, increase the frequency to hourly or every few hours without significantly impacting Gmail API quota.
 
 ---
 
@@ -367,7 +367,7 @@ El pipeline maneja el flujo completo desde la detección hasta el almacenamiento
 │  ┌─────────────────┐    ┌────────────┐                                    │
 │  │ Gmail Nuevos    │───▶│ Es Factura │                                    │
 │  │ Correos         │    │ (nodo IF)  │                                    │
-│  │ (poll/1 min)    │    └─────┬──────┘                                    │
+│  │ (poll/daily 00:00)    │    └─────┬──────┘                                    │
 │  └─────────────────┘          │                                           │
 │                         true  │  false                                    │
 │                    ┌──────────┘  └──────────────┐                        │
@@ -398,14 +398,14 @@ El pipeline maneja el flujo completo desde la detección hasta el almacenamiento
 | Propiedad | Valor |
 |---|---|
 | Tipo | `n8n-nodes-base.gmailTrigger` |
-| Frecuencia de polling | Cada minuto |
+| Frecuencia de polling | Diario a las 00:00 |
 | Filtro | Correos no leídos con adjuntos (`has:attachment`) |
 | Formato de salida | Datos completos del mensaje + adjuntos binarios |
 | Credenciales | `gmailOAuth2` |
 
-Consulta Gmail cada minuto en busca de mensajes no leídos que contengan al menos un adjunto. La configuración `simple: false` devuelve el objeto completo del mensaje de Gmail — incluyendo encabezados, cuerpo y datos binarios de los adjuntos — en lugar de una representación simplificada.
+Consulta Gmail una vez al día, a las 00:00, en busca de mensajes no leídos que contengan al menos un adjunto. La configuración `simple: false` devuelve el objeto completo del mensaje de Gmail — incluyendo encabezados, cuerpo y datos binarios de los adjuntos — en lugar de una representación simplificada.
 
-> ⚠️ El polling cada minuto es agresivo. Consulta [Limitaciones](#limitaciones-es) para las implicaciones en los rate limits.
+> **Nota:** El polling diario a medianoche implica hasta 24 horas de latencia entre la llegada del correo y su procesamiento. Adecuado para recolección de facturas que no requiere tiempo real.
 
 ---
 
@@ -515,8 +515,8 @@ La credencial OAuth2 de Gmail necesita los siguientes scopes:
 | Componente | Tecnología |
 |---|---|
 | Motor de workflow | n8n (`executionOrder: v1`) |
-| Fuente de correo | Gmail (OAuth2, trigger por polling) |
-| Frecuencia de polling | Cada 1 minuto |
+| Fuente de correo | Gmail (OAuth2, trigger por polling diario) |
+| Frecuencia de polling | Diario a las 00:00 |
 | Detección de facturas | Regex sobre asunto + cuerpo (lógica OR) |
 | Manejo de adjuntos | Fan-out en JavaScript (un ítem por adjunto) |
 | Almacenamiento | Google Drive (carpeta configurable por el usuario) |
@@ -528,7 +528,7 @@ La credencial OAuth2 de Gmail necesita los siguientes scopes:
 ## Decisiones de diseño
 
 ### ¿Por qué polling en lugar de trigger por push?
-Gmail no soporta webhooks nativamente en n8n sin configuración adicional (Google Pub/Sub). El polling cada minuto es el enfoque más simple, a costa de hasta 60 segundos de latencia y uso continuo de la API.
+Gmail no soporta webhooks nativamente en n8n sin configuración adicional (Google Pub/Sub). El polling una vez al día a medianoche es un trade-off deliberado: elimina el uso continuo de la API a costa de hasta 24 horas de latencia entre la llegada del correo y la subida del archivo.
 
 ### ¿Por qué lógica OR en el filtro de facturas?
 El filtro usa OR (asunto O cuerpo) para maximizar el recall — perder una factura real es peor que procesar un falso positivo. El trade-off es que correos de marketing o notificaciones bancarias que mencionen "factura" en el cuerpo pueden filtrarse. Cambia a lógica AND si los falsos positivos se convierten en un problema.
@@ -566,12 +566,12 @@ Debido a que `Separar Adjuntos` produce un ítem por adjunto, `Mark a message as
 
 ---
 
-### 🟡 Frecuencia de polling agresiva
-El polling cada minuto implica hasta 1,440 llamadas a la API de Gmail por día solo desde el trigger, más llamadas adicionales por `markAsRead`. La API de Gmail tiene una cuota de 250 unidades por segundo y límites diarios.
+### 🟡 Hasta 24 horas de latencia de procesamiento
+El trigger diario se ejecuta una sola vez a medianoche. Una factura que llega a las 08:00 no se subirá hasta la ejecución de medianoche siguiente — hasta 16 horas después.
 
-**Impacto:** Con volumen bajo de correos en uso normal, no es un problema. Con alto volumen o en credenciales OAuth compartidas, puede alcanzar los rate limits.
+**Impacto:** Aceptable para flujos de contabilidad en lote y conciliaciones de fin de día. No aceptable si la carpeta de Drive alimenta un proceso aguas abajo que necesita las facturas disponibles minutos después de su recepción.
 
-**Mitigación:** Cambiar el intervalo de polling a cada 5 o 15 minutos si el procesamiento en tiempo casi real no es necesario.
+**Mitigación:** Si se necesita menor latencia, aumentar la frecuencia a cada hora o cada pocas horas sin impactar significativamente la cuota de la API de Gmail.
 
 ---
 
