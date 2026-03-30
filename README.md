@@ -2,7 +2,7 @@
 
 > A curated collection of production-grade n8n workflows for AI systems, RAG pipelines, conversational agents, and process automation.
 
-**by [Edgar Darío Arteaga Gaytán](https://www.linkedin.com/in/darioarteaga/a) · AI & LLM Engineer · Zacatecas, México**
+**by [Edgar Darío Arteaga Gaytán](https://github.com/DarioArteaga) · AI & LLM Engineer · Zacatecas, México**
 
 ---
 
@@ -17,12 +17,12 @@
 
 This repository contains exportable n8n workflows built and used in real AI projects. Each workflow is documented with:
 
-- **Purpose:** what problem it solves and where it fits in a larger system
-- **Architecture:** node breakdown, connection types, and design decisions
-- **Setup instructions:** required credentials, environment configuration, and external dependencies
-- **Trade-offs and warnings**: known limitations, edge cases, and production considerations
+- **Purpose** — what problem it solves and where it fits in a larger system
+- **Architecture** — node breakdown, connection types, and design decisions
+- **Setup instructions** — required credentials, environment configuration, and external dependencies
+- **Trade-offs and warnings** — known limitations, edge cases, and production considerations
 
-These are not templates or boilerplate. They are concrete implementations with documented reasoning, built to be understood, adapted, and extended.
+These are not templates or boilerplate. They are concrete implementations with documented reasoning — built to be understood, adapted, and extended.
 
 ---
 
@@ -37,6 +37,11 @@ n8n-agent-flows/
 │       ├── ingest_RAG.json
 │       └── README.md
 │
+├── process-automation/         ← Document processing and task automation
+│   └── invoice-uploader/
+│       ├── invoice-uploader.json
+│       └── README.md
+│
 ├── agents/                     ← Conversational and process agents (coming soon)
 │
 └── voice/                      ← STT / TTS integrations (coming soon)
@@ -46,11 +51,17 @@ n8n-agent-flows/
 
 ## Available Workflows
 
-### 🗂 RAG
+### RAG
 
 | Workflow | Description | Stack |
 |---|---|---|
 | [`ingest_RAG`](./rag/ingest_RAG/README.md) | Manually triggered ingestion pipeline. Downloads a document from Google Drive, chunks it with a Recursive Character Text Splitter, generates embeddings with `text-embedding-3-small`, and inserts vectors into a Supabase pgvector table. | n8n · OpenAI · Supabase · LangChain |
+
+### Process Automation
+
+| Workflow | Description | Stack |
+|---|---|---|
+| [`invoice-uploader`](./process-automation/invoice-uploader/README.md) | Polls Gmail every minute for unread emails with attachments, filters by fiscal keywords (factura, CFDI, comprobante), fans out each attachment into an individual item, and uploads them to a Google Drive folder. Marks the email as read on success. | n8n · Gmail · Google Drive |
 
 ---
 
@@ -65,9 +76,9 @@ n8n-agent-flows/
 
 ## About
 
-Built by an AI & LLM Engineer with real experience shipping end-to-end AI systems: RAG pipelines, conversational agents, LLMOps, and voice interfaces. This repository makes the orchestration layer (the glue between models, data, and APIs) visible and reusable.
+Built by an AI & LLM Engineer with 5+ years shipping end-to-end AI systems: RAG pipelines, conversational agents, LLMOps, and voice interfaces. This repository makes the orchestration layer — the glue between models, data, and APIs — visible and reusable.
 
-[LinkedIn](www.linkedin.com/in/darioarteaga) · [GitHub](https://github.com/DarioArteaga)
+[LinkedIn](https://linkedin.com/in/) · [GitHub](https://github.com/DarioArteaga)
 
 ---
 ---
@@ -79,12 +90,12 @@ Built by an AI & LLM Engineer with real experience shipping end-to-end AI system
 
 Este repositorio contiene workflows de n8n exportables, construidos y utilizados en proyectos reales de AI. Cada workflow está documentado con:
 
-- **Propósito**: qué problema resuelve y cómo encaja en un sistema más grande
-- **Arquitectura**: descripción de nodos, tipos de conexión y decisiones de diseño
-- **Instrucciones de configuración**: credenciales requeridas, configuración del entorno y dependencias externas
-- **Trade-offs y advertencias**: limitaciones conocidas, casos borde y consideraciones para producción
+- **Propósito** — qué problema resuelve y cómo encaja en un sistema más grande
+- **Arquitectura** — descripción de nodos, tipos de conexión y decisiones de diseño
+- **Instrucciones de configuración** — credenciales requeridas, configuración del entorno y dependencias externas
+- **Trade-offs y advertencias** — limitaciones conocidas, casos borde y consideraciones para producción
 
-No son templates ni boilerplate. Son implementaciones concretas con razonamiento documentado, construidas para ser entendidas, adaptadas y extendidas.
+No son templates ni boilerplate. Son implementaciones concretas con razonamiento documentado — construidas para ser entendidas, adaptadas y extendidas.
 
 ---
 
@@ -97,6 +108,11 @@ n8n-agent-flows/
 ├── rag/                        ← Pipelines de ingesta y recuperación RAG
 │   └── ingest_RAG/
 │       ├── ingest_RAG.json
+│       └── README.md
+│
+├── process-automation/         ← Procesamiento de documentos y automatización de tareas
+│   └── invoice-uploader/
+│       ├── invoice-uploader.json
 │       └── README.md
 │
 ├── agents/                     ← Agentes conversacionales y de procesos (próximamente)
@@ -114,6 +130,12 @@ n8n-agent-flows/
 |---|---|---|
 | [`ingest_RAG`](./rag/ingest_RAG/README.md) | Pipeline de ingesta con activación manual. Descarga un documento desde Google Drive, lo fragmenta con un Recursive Character Text Splitter, genera embeddings con `text-embedding-3-small` e inserta los vectores en una tabla pgvector de Supabase. | n8n · OpenAI · Supabase · LangChain |
 
+### Automatización de procesos
+
+| Workflow | Descripción | Stack |
+|---|---|---|
+| [`invoice-uploader`](./process-automation/invoice-uploader/README.md) | Consulta Gmail cada minuto en busca de correos no leídos con adjuntos, filtra por palabras clave fiscales (factura, CFDI, comprobante), separa cada adjunto en un ítem individual y los sube a una carpeta de Google Drive. Marca el correo como leído al completar. | n8n · Gmail · Google Drive |
+
 ---
 
 ## Cómo usar un workflow
@@ -127,6 +149,6 @@ n8n-agent-flows/
 
 ## Sobre el autor
 
-Construido por un AI & LLM Engineer con amplia experiencia (verificable y real) entregando sistemas AI end-to-end: pipelines RAG, agentes conversacionales, LLMOps e interfaces de voz. Este repositorio hace visible y reutilizable la capa de orquestación — el tejido conectivo entre modelos, datos y APIs.
+Construido por un AI & LLM Engineer con 5+ años entregando sistemas AI end-to-end: pipelines RAG, agentes conversacionales, LLMOps e interfaces de voz. Este repositorio hace visible y reutilizable la capa de orquestación — el tejido conectivo entre modelos, datos y APIs.
 
 [LinkedIn](www.linkedin.com/in/darioarteaga) · [GitHub](https://github.com/DarioArteaga)
