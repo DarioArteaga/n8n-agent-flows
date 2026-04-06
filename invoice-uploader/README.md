@@ -160,7 +160,11 @@ Uploads each attachment to the configured Drive folder, using the original filen
 
 Marks the original email as read after a successful upload. This serves as the workflow's implicit success signal: only emails whose attachments were fully uploaded get marked as read.
 
-> ⚠️ Because `Separar Adjuntos` fans out one item per attachment, this node runs **once per attachment**, not once per email. For an email with 3 attachments, it fires 3 redundant `markAsRead` API calls on the same message ID. Harmless functionally, but wasteful.
+> ⚠️ Because `Separar Adjuntos` fans out one item per attachment, this node runs inside a multi-item context. The Message ID expression **must use `.first()`**, not `.item`:
+> ```
+> {{ $('Gmail Nuevos Correos').first().json.id }}   ✓
+> ```
+> Using `.item` will cause n8n to throw *"Can't determine which item to use"* when more than one attachment is present. See [Limitations](#limitations-en) for details.
 
 ---
 
@@ -243,12 +247,23 @@ For Mexican fiscal context (CFDI), the relevant formats are `.xml` (the CFDI its
 
 ---
 
-### 🔴 Redundant `markAsRead` Calls
-Because `Separar Adjuntos` produces one item per attachment, `Mark a message as read` executes once per attachment on the same email ID. An email with 3 attachments triggers 3 identical API calls.
+### 🔴 Redundant `markAsRead` Calls + Item Resolution Error
+Because `Separar Adjuntos` produces one item per attachment, the `Mark a message as read` node runs inside a multi-item context. If the Message ID expression uses `.item`:
 
-**Impact:** No functional problem, but unnecessary API usage that contributes to rate limit consumption.
+```
+{{ $('Gmail Nuevos Correos').item.json.id }}   ← will fail
+```
 
-**Mitigation:** Move the `markAsRead` step to run once per email, before `Separar Adjuntos`, or add a deduplication step using the email ID.
+n8n cannot determine which item to pair and throws:
+> *"Can't determine which item to use"*
+
+**Fix:** Replace `.item` with `.first()` to resolve the original email unambiguously:
+
+```
+{{ $('Gmail Nuevos Correos').first().json.id }}   ✓
+```
+
+`.first()` always returns the source email regardless of how many attachment items are in flight downstream. This also eliminates the redundant calls: since the same ID is marked read N times (once per attachment), using `.first()` is both the correct and the safe expression.
 
 ---
 
@@ -475,7 +490,11 @@ Sube cada adjunto a la carpeta de Drive configurada, usando el nombre de archivo
 
 Marca el correo original como leído después de una subida exitosa. Esto funciona como señal implícita de éxito del workflow: solo los correos cuyos adjuntos se subieron completamente se marcan como leídos.
 
-> ⚠️ Debido a que `Separar Adjuntos` genera un ítem por adjunto, este nodo se ejecuta **una vez por adjunto**, no una vez por correo. Para un correo con 3 adjuntos, realiza 3 llamadas redundantes a la API `markAsRead` sobre el mismo ID de mensaje. Funcionalmente inofensivo, pero innecesario.
+> ⚠️ Debido a que `Separar Adjuntos` genera un ítem por adjunto, este nodo se ejecuta dentro de un contexto multi-ítem. La expresión del Message ID **debe usar `.first()`**, no `.item`:
+> ```
+> {{ $('Gmail Nuevos Correos').first().json.id }}   ✓
+> ```
+> Usar `.item` provoca que n8n lance el error *"Can't determine which item to use"* cuando hay más de un adjunto. Consulta [Limitaciones](#limitaciones-es) para más detalles.
 
 ---
 
@@ -557,12 +576,23 @@ Para el contexto fiscal mexicano (CFDI), los formatos relevantes son `.xml` (el 
 
 ---
 
-### 🔴 Llamadas redundantes a `markAsRead`
-Debido a que `Separar Adjuntos` produce un ítem por adjunto, `Mark a message as read` se ejecuta una vez por adjunto sobre el mismo ID de correo. Un correo con 3 adjuntos dispara 3 llamadas idénticas a la API.
+### 🔴 Error de resolución de ítem en `markAsRead`
+Debido a que `Separar Adjuntos` produce un ítem por adjunto, el nodo `Mark a message as read` se ejecuta dentro de un contexto multi-ítem. Si la expresión del Message ID usa `.item`:
 
-**Impacto:** Sin problema funcional, pero uso innecesario de la API que contribuye al consumo del rate limit.
+```
+{{ $('Gmail Nuevos Correos').item.json.id }}   ← fallará
+```
 
-**Mitigación:** Mover el paso `markAsRead` para que se ejecute una vez por correo, antes de `Separar Adjuntos`, o agregar un paso de deduplicación usando el ID del correo.
+n8n no puede determinar qué ítem parear y lanza:
+> *"Can't determine which item to use"*
+
+**Fix:** Reemplazar `.item` por `.first()` para resolver el correo original sin ambigüedad:
+
+```
+{{ $('Gmail Nuevos Correos').first().json.id }}   ✓
+```
+
+`.first()` siempre devuelve el correo fuente sin importar cuántos ítems de adjuntos estén en vuelo aguas abajo. Esto también resuelve las llamadas redundantes: dado que el mismo ID se marca como leído N veces (una por adjunto), usar `.first()` es tanto la expresión correcta como la segura.
 
 ---
 

@@ -6,7 +6,7 @@
         "pollTimes": {
           "item": [
             {
-              "mode": "everyMinute"
+              "hour": 0
             }
           ]
         },
@@ -20,7 +20,7 @@
         }
       },
       "id": "9935377c-4540-4ef7-86a5-241099ae42d6",
-      "name": "Gmail Nuevos Correos",
+      "name": "check-inbox",
       "type": "n8n-nodes-base.gmailTrigger",
       "typeVersion": 1.3,
       "position": [
@@ -69,7 +69,7 @@
         "options": {}
       },
       "id": "427e8e5f-ff7d-4ebb-b154-1b2119b3d1da",
-      "name": "Es Factura",
+      "name": "invoice?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
@@ -82,7 +82,7 @@
         "jsCode": "const items = $input.all(); const result = []; for (const item of items) { const binary = item.binary || {}; const keys = Object.keys(binary).filter(k => k.startsWith('attachment_')); for (const key of keys) { result.push({ json: { emailSubject: item.json.subject, emailFrom: item.json.from, emailDate: item.json.date, fileName: binary[key].fileName || key }, binary: { data: binary[key] } }); } } return result;"
       },
       "id": "fd828d24-a8b6-47c2-834f-b697ba28b9de",
-      "name": "Separar Adjuntos",
+      "name": "get-attachments",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -110,7 +110,7 @@
         "options": {}
       },
       "id": "a4f5a733-61c3-47da-859b-3dc98d34c288",
-      "name": "Subir a Google Drive",
+      "name": "upload-drive",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
@@ -125,20 +125,9 @@
       }
     },
     {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        736,
-        416
-      ],
-      "id": "3e4bacef-fe29-4e46-afa0-31c592e94c9e",
-      "name": "No Operation, do nothing"
-    },
-    {
       "parameters": {
         "operation": "markAsRead",
-        "messageId": "={{ $('Gmail Nuevos Correos').item.json.id }}"
+        "messageId": "={{ $('check-inbox').first().json.id }}"
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
@@ -147,7 +136,7 @@
         208
       ],
       "id": "3a17cbc1-f478-486a-ba3a-4314a651ddb9",
-      "name": "Mark a message as read",
+      "name": "mark-done",
       "webhookId": "ef0aa8ce-31a8-4e75-a989-09d994040195",
       "credentials": {
         "gmailOAuth2": {
@@ -155,55 +144,66 @@
           "name": "Gmail Personal"
         }
       }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        736,
+        416
+      ],
+      "id": "3e4bacef-fe29-4e46-afa0-31c592e94c9e",
+      "name": "done"
     }
   ],
   "pinData": {},
   "connections": {
-    "Gmail Nuevos Correos": {
+    "check-inbox": {
       "main": [
         [
           {
-            "node": "Es Factura",
+            "node": "invoice?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Es Factura": {
+    "invoice?": {
       "main": [
         [
           {
-            "node": "Separar Adjuntos",
+            "node": "get-attachments",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "No Operation, do nothing",
+            "node": "done",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Separar Adjuntos": {
+    "get-attachments": {
       "main": [
         [
           {
-            "node": "Subir a Google Drive",
+            "node": "upload-drive",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Subir a Google Drive": {
+    "upload-drive": {
       "main": [
         [
           {
-            "node": "Mark a message as read",
+            "node": "mark-done",
             "type": "main",
             "index": 0
           }
@@ -217,7 +217,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "6dbd5915-731b-4c4b-99e1-849d2eefb264",
+  "versionId": "871c19e7-bb6e-4498-9cbb-e6299a921162",
   "meta": {
     "aiBuilderAssisted": true,
     "templateCredsSetupCompleted": true,
