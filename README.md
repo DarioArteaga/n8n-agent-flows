@@ -30,21 +30,27 @@ These are not templates or boilerplate. They are concrete implementations with d
 
 ```
 n8n-agent-flows/
-├── README.md                   ← You are here
+├── README.md                        ← You are here
 │
-├── rag/                        ← RAG ingestion and retrieval pipelines
+├── rag/                             ← RAG ingestion and retrieval pipelines
 │   └── ingest_RAG/
 │       ├── ingest_RAG.json
 │       └── README.md
 │
-├── process-automation/         ← Document processing and task automation
+├── process-automation/              ← Document processing and task automation
 │   └── invoice-uploader/
 │       ├── invoice-uploader.json
 │       └── README.md
 │
-├── agents/                     ← Conversational and process agents (coming soon)
+├── agents/                          ← Conversational and process agents
+│   ├── agente-calculadora/
+│   │   ├── agente-calculadora.json
+│   │   └── README.md
+│   └── agente-investigador/
+│       ├── agente-investigador.json
+│       └── README.md
 │
-└── voice/                      ← STT / TTS integrations (coming soon)
+└── voice/                           ← STT / TTS integrations (coming soon)
 ```
 
 ---
@@ -61,7 +67,14 @@ n8n-agent-flows/
 
 | Workflow | Description | Stack |
 |---|---|---|
-| [`invoice-uploader`](./process-automation/invoice-uploader/README.md) | Polls Gmail every minute for unread emails with attachments, filters by fiscal keywords (factura, CFDI, comprobante), fans out each attachment into an individual item, and uploads them to a Google Drive folder. Marks the email as read on success. | n8n · Gmail · Google Drive |
+| [`invoice-uploader`](./process-automation/invoice-uploader/README.md) | Polls Gmail daily for unread emails with attachments, filters by fiscal keywords (factura, CFDI, comprobante), fans out each attachment into an individual item, and uploads them to a Google Drive folder. Marks the email as read on success. | n8n · Gmail · Google Drive |
+
+### Agents
+
+| Workflow | Description | Stack |
+|---|---|---|
+| [`agente-calculadora`](./agents/agente-calculadora/README.md) | Conversational agent exposed through n8n's built-in chat UI. Uses a Calculator tool for arithmetic and demonstrates the ReAct reasoning loop — the model decides on each turn whether to invoke the tool or answer directly. Stateless by design. | n8n · OpenAI · LangChain |
+| [`agente-investigador`](./agents/agente-investigador/README.md) | Conversational research agent with Wikipedia retrieval and a session memory window. Demonstrates tool use combined with short-term context persistence across turns. Each browser session maintains its own isolated memory. | n8n · OpenAI · Wikipedia · LangChain |
 
 ---
 
@@ -78,7 +91,7 @@ n8n-agent-flows/
 
 Built by an AI & LLM Engineer with 5+ years shipping end-to-end AI systems: RAG pipelines, conversational agents, LLMOps, and voice interfaces. This repository makes the orchestration layer — the glue between models, data, and APIs — visible and reusable.
 
-[LinkedIn](https://linkedin.com/in/) · [GitHub](https://github.com/DarioArteaga)
+[LinkedIn](https://linkedin.com/in/darioarteaga) · [GitHub](https://github.com/DarioArteaga)
 
 ---
 ---
@@ -103,21 +116,27 @@ No son templates ni boilerplate. Son implementaciones concretas con razonamiento
 
 ```
 n8n-agent-flows/
-├── README.md                   ← Estás aquí
+├── README.md                        ← Estás aquí
 │
-├── rag/                        ← Pipelines de ingesta y recuperación RAG
+├── rag/                             ← Pipelines de ingesta y recuperación RAG
 │   └── ingest_RAG/
 │       ├── ingest_RAG.json
 │       └── README.md
 │
-├── process-automation/         ← Procesamiento de documentos y automatización de tareas
+├── process-automation/              ← Procesamiento de documentos y automatización de tareas
 │   └── invoice-uploader/
 │       ├── invoice-uploader.json
 │       └── README.md
 │
-├── agents/                     ← Agentes conversacionales y de procesos (próximamente)
+├── agents/                          ← Agentes conversacionales y de procesos
+│   ├── agente-calculadora/
+│   │   ├── agente-calculadora.json
+│   │   └── README.md
+│   └── agente-investigador/
+│       ├── agente-investigador.json
+│       └── README.md
 │
-└── voice/                      ← Integraciones STT / TTS (próximamente)
+└── voice/                           ← Integraciones STT / TTS (próximamente)
 ```
 
 ---
@@ -134,7 +153,14 @@ n8n-agent-flows/
 
 | Workflow | Descripción | Stack |
 |---|---|---|
-| [`invoice-uploader`](./process-automation/invoice-uploader/README.md) | Consulta Gmail cada minuto en busca de correos no leídos con adjuntos, filtra por palabras clave fiscales (factura, CFDI, comprobante), separa cada adjunto en un ítem individual y los sube a una carpeta de Google Drive. Marca el correo como leído al completar. | n8n · Gmail · Google Drive |
+| [`invoice-uploader`](./process-automation/invoice-uploader/README.md) | Consulta Gmail diariamente en busca de correos no leídos con adjuntos, filtra por palabras clave fiscales (factura, CFDI, comprobante), separa cada adjunto en un ítem individual y los sube a una carpeta de Google Drive. Marca el correo como leído al completar. | n8n · Gmail · Google Drive |
+
+### Agentes
+
+| Workflow | Descripción | Stack |
+|---|---|---|
+| [`agente-calculadora`](./agents/agente-calculadora/README.md) | Agente conversacional expuesto a través de la UI de chat integrada en n8n. Usa una herramienta Calculator para aritmética y demuestra el loop de razonamiento ReAct — el modelo decide en cada turno si invocar la herramienta o responder directamente. Sin estado por diseño. | n8n · OpenAI · LangChain |
+| [`agente-investigador`](./agents/agente-investigador/README.md) | Agente investigador conversacional con recuperación en Wikipedia y una ventana de memoria de sesión. Demuestra el uso de herramientas combinado con persistencia de contexto de corto plazo entre turnos. Cada sesión del navegador mantiene su propia memoria aislada. | n8n · OpenAI · Wikipedia · LangChain |
 
 ---
 
@@ -151,4 +177,4 @@ n8n-agent-flows/
 
 Construido por un AI & LLM Engineer con 5+ años entregando sistemas AI end-to-end: pipelines RAG, agentes conversacionales, LLMOps e interfaces de voz. Este repositorio hace visible y reutilizable la capa de orquestación — el tejido conectivo entre modelos, datos y APIs.
 
-[LinkedIn](www.linkedin.com/in/darioarteaga) · [GitHub](https://github.com/DarioArteaga)
+[LinkedIn](https://linkedin.com/in/darioarteaga) · [GitHub](https://github.com/DarioArteaga)

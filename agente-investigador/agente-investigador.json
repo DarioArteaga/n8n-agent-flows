@@ -1,0 +1,143 @@
+{
+  "name": "agente-investigador",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "8da47f1b-f941-445d-938b-58aa15053113",
+      "name": "Chat",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        304
+      ],
+      "webhookId": "fe5158d4-eef7-48c6-929d-e74018bba162"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente investigador. Puedes buscar informacion en Wikipedia para responder preguntas. Siempre cita la fuente cuando uses Wikipedia. Responde en espanol de forma clara y concisa.",
+          "maxIterations": 5
+        }
+      },
+      "id": "7dc1e963-370d-497a-860d-7750792a9cf9",
+      "name": "Agente Investigador",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        512,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.4-pro",
+          "mode": "list",
+          "cachedResultName": "gpt-5.4-pro"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "92474f09-f4c0-466b-8a4e-4f27209ad56c",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        608
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "QmcCsSkGuGSxi37L",
+          "name": "OpenAI Personal"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "e207bcf6-f06e-4491-b2c9-f340601a3b7f",
+      "name": "Memoria de Sesion",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        576
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "f545478c-360f-41a7-9ea6-2dd3c10ef07c",
+      "name": "Wikipedia",
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        736,
+        592
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "Agente Investigador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Investigador",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria de Sesion": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Investigador",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Investigador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "49888fae-b8e4-4b22-9660-fe645245f6e6",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "instanceId": "2148c11bd9392f64397ae662ec9fcbde733ea0a73464f15d2dd9fd98548c6830"
+  },
+  "id": "Z5TQBJwc1nOZpVwB",
+  "tags": []
+}
