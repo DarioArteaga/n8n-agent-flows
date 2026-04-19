@@ -1,0 +1,244 @@
+{
+  "name": "content-creator",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        240
+      ],
+      "id": "01ab8448-9a63-4a1f-b391-e5b1c207b659",
+      "name": "When chat message received",
+      "webhookId": "8736aba0-dbf8-4c9e-b83c-d860dc9fd67f"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Útil para desglosar un texto largo en puntos clave, identificar las ideas más importantes y proponer el orden lógico de un hilo o artículo. No redacta el contenido final, solo crea el esquema.",
+        "text": "={{ $fromAI(\"input\") }}",
+        "options": {
+          "systemMessage": "Eres un experto en curación de contenidos y pensamiento lógico. Tu función es recibir un texto bruto y extraer exclusivamente los puntos más impactantes, datos estadísticos o lecciones clave.\n\nTu salida debe ser: Una lista numerada de conceptos clave, sin introducciones ni despedidas. Identifica claramente cuál es el mensaje central que debería ser el 'gancho' inicial."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        432,
+        464
+      ],
+      "id": "0b75291c-f2ba-4161-aeb4-423aea223352",
+      "name": "agente_analista"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Útil para escribir contenido con un tono persuasivo, informal y atractivo. Debe usarse una vez que ya existe un esquema o puntos clave. Se encarga de usar emojis y un lenguaje que genere engagement.t can call other tools",
+        "text": "={{ $fromAI(\"input\") }}",
+        "options": {
+          "systemMessage": "Eres un redactor creativo especializado en redes sociales con un tono 'edutainment' (educativo pero entretenido). Tu misión es convertir una lista de puntos clave en un hilo narrativo.\n\nReglas de estilo:\n- Usa oraciones cortas y directas.\n- Implementa 'espacio en blanco' entre párrafos para facilitar la lectura.\n- Incluye máximo 1 emoji por punto.\n- Escribe en una voz activa y cercana al lector"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        720,
+        464
+      ],
+      "id": "bc85ed3a-f84e-4054-b4fe-987b5a40349d",
+      "name": "agente_redactor"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Útil para revisar ortografía, gramática y verificar que el texto final cumpla con restricciones de longitud (como los 280 caracteres de X). Debe ser el último paso antes de entregar el resultado.",
+        "text": "={{ $fromAI(\"input\") }}",
+        "options": {
+          "systemMessage": "Eres un editor jefe obsesionado con la perfección y la brevedad. Tu tarea es recibir el borrador del redactor y realizar los siguientes ajustes:\n\n- Corrige cualquier error ortográfico o gramatical.\n- Asegúrate de que ningún bloque de texto supere los 280 caracteres (formato X/Twitter).\n- Elimina palabras de relleno o frases repetitivas.\n\n**IMPORTANTE: Solo devuelve el texto final corregido, no añadas comentarios adicionales ni explicaciones de lo que cambiaste.**"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        1008,
+        464
+      ],
+      "id": "99f7c982-d244-403f-9095-cb12db7b46f0",
+      "name": "agente_editor"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un Director de Agencia de Contenido. Tu objetivo es transformar la información que el usuario te entregue en un hilo viral para redes sociales.\n\nTu flujo de trabajo obligatorio es:\n\nPide al agente_analista que extraiga lo más importante.\n\nPasa ese análisis al agente_redactor para que escriba el borrador.\n\nPide al agente_editor que pula el resultado final.\n\nUna vez que el editor termine, entrega el resultado al usuario."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        592,
+        240
+      ],
+      "id": "1c4df215-4bde-450b-a438-63fd758017a0",
+      "name": "agente_supervisor"
+    },
+    {
+      "parameters": {
+        "content": "### **Lógica del sistema: Agencia de contenido multi-agente**\nEste flujo implementa una arquitectura de **Agente Supervisor (Cerebro)** que coordina a tres agentes especialistas (tools) para transformar textos densos en hilos virales de alta calidad.\n\n**1. Orquestador central (`agente_supervisor`):** Utiliza Claude 3.5 Sonnet como director ejecutivo. Su función no es escribir, sino planificar. Analiza el pedido del usuario, decide cuándo llamar a cada especialista y supervisa que el flujo de trabajo (Analista → Redactor → Editor) se cumpla estrictamente.\n\n**2. Agentes de Ejecución (Tools):** Utilizan GPT-3.5 Turbo para tareas operativas específicas, optimizando costos sin sacrificar la lógica:\n\n- `agente_analista`: Filtra el ruido. Su misión es la curación lógica y la extracción de conceptos clave para crear la base del contenido.\n- `agente_redactor`: Aporta la creatividad. Traduce los puntos clave a un lenguaje narrativo (\"edutainment\"), usando ganchos y emojis para generar engagement.\n- `agente_editor`: Es el control de calidad. Realiza el pulido final, corrigiendo gramática y asegurando que cada post respete el límite de 280 caracteres de X/Twitter.\n\n**Propósito didáctico:** Demostrar cómo la inteligencia estratégica (Supervisor potente) puede potenciar herramientas de ejecución más simples, logrando un resultado superior a través de la especialización de tareas.",
+        "height": 432,
+        "width": 912,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "34750d5e-ff49-4251-af04-6953d3b0d570",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        464
+      ],
+      "id": "4c28e818-13ba-4768-acb1-b5cea9644dec",
+      "name": "Sonnet 4.5",
+      "credentials": {
+        "anthropicApi": {
+          "id": "8gXSeWm84rxtnMYG",
+          "name": "Anthropic Personal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "gpt-3.5-turbo"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        672
+      ],
+      "id": "40af5bd3-36e2-404c-94b3-0af0f9f67348",
+      "name": "GPT 3.5 Turbo",
+      "credentials": {
+        "openAiApi": {
+          "id": "QmcCsSkGuGSxi37L",
+          "name": "OpenAI Personal"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "agente_supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agente_analista": {
+      "ai_tool": [
+        [
+          {
+            "node": "agente_supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agente_redactor": {
+      "ai_tool": [
+        [
+          {
+            "node": "agente_supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agente_editor": {
+      "ai_tool": [
+        [
+          {
+            "node": "agente_supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sonnet 4.5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agente_supervisor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 3.5 Turbo": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agente_analista",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "agente_redactor",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "agente_editor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "27d6953b-a16a-4611-a2b7-9d05f5b6ecf6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2148c11bd9392f64397ae662ec9fcbde733ea0a73464f15d2dd9fd98548c6830"
+  },
+  "id": "V5ZwBFSpWDccT3n8",
+  "tags": []
+}

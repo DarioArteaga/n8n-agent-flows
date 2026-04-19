@@ -35,9 +35,9 @@
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-5.4-pro",
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "cachedResultName": "gpt-5.4-pro"
+          "cachedResultName": "gpt-4o-mini"
         },
         "builtInTools": {},
         "options": {}

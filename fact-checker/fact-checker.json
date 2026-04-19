@@ -1,0 +1,353 @@
+{
+  "name": "fact-checker",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -80,
+        480
+      ],
+      "id": "406c086b-93c4-4151-82db-85203adb9645",
+      "name": "When chat message received",
+      "webhookId": "479ab2ad-5046-47ae-834d-f5014be041a4"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Útil para rastrear cómo se está reportando una noticia en Google. Devuelve una visión general de los titulares actuales y la narrativa mediática.",
+        "text": "={{ $fromAI(\"input\") }}",
+        "options": {
+          "systemMessage": "Eres un rastreador de prensa. Tu objetivo es usar SerpAPI para identificar las 5 fuentes principales que reportan sobre la entrada del usuario. Clasifica las fuentes en: Medios oficiales, Redes Sociales o Blogs de opinión."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        320,
+        704
+      ],
+      "id": "ba344c6a-4772-41d3-8312-2fd3f6429a00",
+      "name": "agente_serp"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Útil para realizar una investigación profunda de datos. Extrae contenido de sitios oficiales, bases de datos o artículos de investigación para confirmar hechos.",
+        "text": "={{ $fromAI(\"input\") }}",
+        "options": {
+          "systemMessage": "Eres un investigador de datos. Tu misión es usar Tavily para encontrar evidencia fáctica, estadísticas o comunicados oficiales que respalden o desmientan la noticia. Prioriza la precisión técnica sobre la narrativa."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        608,
+        704
+      ],
+      "id": "986157c8-d5cd-477e-b4cd-1ebc9ccb49a8",
+      "name": "agente_tavily"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Útil para comparar dos versiones de una misma historia y detectar inconsistencias lógicas o falta de evidencia.",
+        "text": "={{ $fromAI(\"input\") }}",
+        "options": {
+          "systemMessage": "Eres un auditor de lógica. Recibirás los informes de búsqueda y de contraste. Tu tarea es señalar contradicciones entre lo que dicen los medios y lo que dicen los datos oficiales. Concluye con un nivel de confianza (Bajo, Medio, Alto)."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        944,
+        688
+      ],
+      "id": "fc35f364-28db-499a-845e-e14bbd3967e2",
+      "name": "agente_verificador"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        704
+      ],
+      "id": "b041d974-20d1-4466-9fdf-9f8e88f46c42",
+      "name": "Sonnet 4.5",
+      "credentials": {
+        "anthropicApi": {
+          "id": "8gXSeWm84rxtnMYG",
+          "name": "Anthropic Personal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        912
+      ],
+      "id": "7cb30a3f-863a-4d37-8bb5-fcaa1447d2ce",
+      "name": "GPT 4o",
+      "credentials": {
+        "openAiApi": {
+          "id": "QmcCsSkGuGSxi37L",
+          "name": "OpenAI Personal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        480,
+        912
+      ],
+      "id": "0abff074-29a5-4bf9-9c08-e4a517ac0588",
+      "name": "SerpAPI"
+    },
+    {
+      "parameters": {
+        "content": "### **Lógica del sistema: Detective de noticias falsas (multi-agente)**\nEste flujo utiliza una arquitectura de Agente Supervisor para auditar la veracidad de la información mediante el contraste de fuentes mediáticas frente a datos fácticos.\n\n**1. `orquestador central` (AI Agent ):** Actúa como el juez de instrucción utilizando **Claude Sonnet 4.5**. Su función es gestionar el plan de investigación, invocando a los especialistas en el orden correcto y manteniendo la coherencia de la investigación a través de una memoria de ventana ('Window Buffer Memory').\n\n**2. Agentes Especialistas (Tools):** Cada agente tiene una misión atómica para reducir la entropía y maximizar la precisión:\n\n- `agente_serp` (vía GPT-4o-mini): Actúa como rastreador de prensa. Su objetivo es identificar cómo los medios y redes sociales están reportando la noticia en tiempo real.\n- `agente_tavily` (vía GPT-4o): Es el investigador de datos profundos. Utiliza **Tavily** para localizar comunicados oficiales, estadísticas y evidencia técnica que sirva de contrapunto a la narrativa mediática.\n- `agente_verificador` (vía GPT-4o): Auditor de lógica independiente. Compara los reportes de los dos agentes anteriores para señalar inconsistencias y emitir un veredicto final con un nivel de confianza determinado.\n\n**Propósito Didáctico:** Demostrar una arquitectura de \"Verificación y Contraste\" donde el valor reside en la capacidad del supervisor para mediar entre visiones opuestas (noticia vs. dato) y extraer una síntesis objetiva.",
+        "height": 400,
+        "width": 944,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "f50d4196-feff-45ff-948e-cbc33114c443",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Eres un **Detective de Noticias Falsas**. Tu objetivo es verificar la veracidad de la información que el usuario te proporcione.\n\nTu proceso es:\n\n1. Llama al agente_serp para ver qué se dice en las noticias actuales.\n\n2. Llama al agente_tavily para buscar la base técnica o comunicados oficiales.\n\n3. Envía ambos reportes al agente_verificador.\n\n4. Entrega un informe final al usuario con: La noticia, el análisis de fuentes, las contradicciones halladas y el veredicto final."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        272,
+        480
+      ],
+      "id": "103ab393-8139-44dc-a059-596e7fb62af9",
+      "name": "orquestador_central"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        912
+      ],
+      "id": "7c8af0b3-fb9d-4749-987a-83dd2acc972e",
+      "name": "GPT 4o Mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "QmcCsSkGuGSxi37L",
+          "name": "OpenAI Personal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        704
+      ],
+      "id": "da6e8490-13b6-40cc-90f0-56d04bae6453",
+      "name": "windows_buffer_memory"
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        928,
+        912
+      ],
+      "id": "b165c026-e1b5-4ad5-b24f-7e1264c3ea74",
+      "name": "Tavily"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "orquestador_central",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agente_serp": {
+      "ai_tool": [
+        [
+          {
+            "node": "orquestador_central",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agente_tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "orquestador_central",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agente_verificador": {
+      "ai_tool": [
+        [
+          {
+            "node": "orquestador_central",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sonnet 4.5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "orquestador_central",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 4o": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agente_verificador",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "agente_tavily",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "agente_serp",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT 4o Mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agente_serp",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "windows_buffer_memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "orquestador_central",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "agente_tavily",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "orquestador_central": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f4bf0336-c8d8-46c5-9318-04a6529f48a0",
+  "meta": {
+    "instanceId": "2148c11bd9392f64397ae662ec9fcbde733ea0a73464f15d2dd9fd98548c6830"
+  },
+  "id": "HTZHYarcOY3FTcxr",
+  "tags": []
+}

@@ -30,28 +30,16 @@ These are not templates or boilerplate. They are concrete implementations with d
 
 ```
 n8n-agent-flows/
-├── README.md                        ← You are here
-│
-├── rag/                             ← RAG ingestion and retrieval pipelines
-│   └── ingest_RAG/
-│       ├── ingest_RAG.json
-│       └── README.md
-│
-├── process-automation/              ← Document processing and task automation
-│   └── invoice-uploader/
-│       ├── invoice-uploader.json
-│       └── README.md
-│
-├── agents/                          ← Conversational and process agents
-│   ├── agente-calculadora/
-│   │   ├── agente-calculadora.json
-│   │   └── README.md
-│   └── agente-investigador/
-│       ├── agente-investigador.json
-│       └── README.md
-│
-└── voice/                           ← STT / TTS integrations (coming soon)
+├── README.md
+├── rag/
+├── invoice-uploader/
+├── agente-calculadora/
+├── agente-investigador/
+├── content-creator/
+└── fact-checker/
 ```
+
+Each folder contains the workflow `.json` file and a `README.md`.
 
 ---
 
@@ -59,22 +47,29 @@ n8n-agent-flows/
 
 ### RAG
 
-| Workflow | Description | Stack |
-|---|---|---|
-| [`ingest_RAG`](./rag/ingest_RAG/README.md) | Manually triggered ingestion pipeline. Downloads a document from Google Drive, chunks it with a Recursive Character Text Splitter, generates embeddings with `text-embedding-3-small`, and inserts vectors into a Supabase pgvector table. | n8n · OpenAI · Supabase · LangChain |
+| Workflow | Trigger | Description | Stack |
+|---|---|---|---|
+| [`rag`](./rag/README.md) | Manual | Ingestion pipeline: Google Drive PDF → recursive chunking → `text-embedding-3-small` → Supabase pgvector insert | n8n · OpenAI · Supabase · LangChain |
 
 ### Process Automation
 
-| Workflow | Description | Stack |
-|---|---|---|
-| [`invoice-uploader`](./process-automation/invoice-uploader/README.md) | Polls Gmail daily for unread emails with attachments, filters by fiscal keywords (factura, CFDI, comprobante), fans out each attachment into an individual item, and uploads them to a Google Drive folder. Marks the email as read on success. | n8n · Gmail · Google Drive |
+| Workflow | Trigger | Description | Stack |
+|---|---|---|---|
+| [`invoice-uploader`](./invoice-uploader/README.md) | Daily 00:00 | Gmail fiscal email poller — OR-regex filter (factura/CFDI/comprobante) → attachment fan-out (JS Code node) → Drive upload → mark as read | n8n · Gmail · Google Drive |
 
 ### Agents
 
-| Workflow | Description | Stack |
-|---|---|---|
-| [`agente-calculadora`](./agents/agente-calculadora/README.md) | Conversational agent exposed through n8n's built-in chat UI. Uses a Calculator tool for arithmetic and demonstrates the ReAct reasoning loop — the model decides on each turn whether to invoke the tool or answer directly. Stateless by design. | n8n · OpenAI · LangChain |
-| [`agente-investigador`](./agents/agente-investigador/README.md) | Conversational research agent with Wikipedia retrieval and a session memory window. Demonstrates tool use combined with short-term context persistence across turns. Each browser session maintains its own isolated memory. | n8n · OpenAI · Wikipedia · LangChain |
+| Workflow | Trigger | Description | Stack |
+|---|---|---|---|
+| [`agente-calculadora`](./agente-calculadora/README.md) | Chat | Conversational agent with Calculator tool. Demonstrates the ReAct reasoning loop — stateless by design | n8n · OpenAI · LangChain |
+| [`agente-investigador`](./agente-investigador/README.md) | Chat | Research agent with Wikipedia retrieval and session memory window. Demonstrates tool use + short-term context persistence | n8n · OpenAI · Wikipedia · LangChain |
+
+### Content Automation (Multi-Agent)
+
+| Workflow | Trigger | Description | Stack |
+|---|---|---|---|
+| [`content-creator`](./content-creator/README.md) | Chat | Supervisor–Specialist architecture: Analyst → Writer → Editor pipeline producing Twitter/X threads ≤ 280 chars per block | Claude Sonnet 4.5 · GPT-3.5 Turbo · n8n |
+| [`fact-checker`](./fact-checker/README.md) | Chat | Verification-and-Contrast architecture: media narrative (SerpAPI) vs. factual evidence (Tavily) → logic audit → confidence verdict | Claude Sonnet 4.5 · GPT-4o · GPT-4o Mini · SerpAPI · Tavily · n8n |
 
 ---
 
@@ -83,13 +78,31 @@ n8n-agent-flows/
 1. Download the `.json` file from the workflow folder
 2. In your n8n instance: **Import** → **From File** → select the `.json`
 3. Connect your own credentials (Google Drive, OpenAI, Supabase, etc.)
-4. Read the workflow's `README.md` before running — each one documents required setup steps, warnings, and configuration details
+4. Read the workflow's `README.md` before running — each one documents required setup, warnings, and design decisions
+
+---
+
+## Documentation Standards
+
+Every workflow README follows this structure:
+
+- **Overview** — what the flow does and why it exists
+- **Architecture diagram** — ASCII, distinguishing LangChain sub-graph connections from standard n8n main flow
+- **Node breakdown table** — type, model/tool, and role per node
+- **Design Decisions** — the *why* behind architectural choices, not just the *what*
+- **Setup & Credentials** — required keys and services
+- **Limitations & Known Issues** — severity-coded (🔴 critical / 🟡 advisory)
+- **Didactic Notes** — patterns worth studying for engineers and students
+
+Language: bilingual EN/ES where context benefits from both.
 
 ---
 
 ## About
 
 Built by an AI & LLM Engineer with 5+ years shipping end-to-end AI systems: RAG pipelines, conversational agents, LLMOps, and voice interfaces. This repository makes the orchestration layer — the glue between models, data, and APIs — visible and reusable.
+
+These workflows are also used as teaching material in a professional certification program (diplomado) on AI and automation.
 
 [LinkedIn](https://linkedin.com/in/darioarteaga) · [GitHub](https://github.com/DarioArteaga)
 
@@ -116,28 +129,16 @@ No son templates ni boilerplate. Son implementaciones concretas con razonamiento
 
 ```
 n8n-agent-flows/
-├── README.md                        ← Estás aquí
-│
-├── rag/                             ← Pipelines de ingesta y recuperación RAG
-│   └── ingest_RAG/
-│       ├── ingest_RAG.json
-│       └── README.md
-│
-├── process-automation/              ← Procesamiento de documentos y automatización de tareas
-│   └── invoice-uploader/
-│       ├── invoice-uploader.json
-│       └── README.md
-│
-├── agents/                          ← Agentes conversacionales y de procesos
-│   ├── agente-calculadora/
-│   │   ├── agente-calculadora.json
-│   │   └── README.md
-│   └── agente-investigador/
-│       ├── agente-investigador.json
-│       └── README.md
-│
-└── voice/                           ← Integraciones STT / TTS (próximamente)
+├── README.md
+├── rag/
+├── invoice-uploader/
+├── agente-calculadora/
+├── agente-investigador/
+├── content-creator/
+└── fact-checker/
 ```
+
+Cada carpeta contiene el archivo `.json` del workflow y un `README.md`.
 
 ---
 
@@ -145,22 +146,29 @@ n8n-agent-flows/
 
 ### RAG
 
-| Workflow | Descripción | Stack |
-|---|---|---|
-| [`ingest_RAG`](./rag/ingest_RAG/README.md) | Pipeline de ingesta con activación manual. Descarga un documento desde Google Drive, lo fragmenta con un Recursive Character Text Splitter, genera embeddings con `text-embedding-3-small` e inserta los vectores en una tabla pgvector de Supabase. | n8n · OpenAI · Supabase · LangChain |
+| Workflow | Trigger | Descripción | Stack |
+|---|---|---|---|
+| [`rag`](./rag/README.md) | Manual | Pipeline de ingesta: PDF desde Google Drive → chunking recursivo → `text-embedding-3-small` → inserción en Supabase pgvector | n8n · OpenAI · Supabase · LangChain |
 
 ### Automatización de procesos
 
-| Workflow | Descripción | Stack |
-|---|---|---|
-| [`invoice-uploader`](./process-automation/invoice-uploader/README.md) | Consulta Gmail diariamente en busca de correos no leídos con adjuntos, filtra por palabras clave fiscales (factura, CFDI, comprobante), separa cada adjunto en un ítem individual y los sube a una carpeta de Google Drive. Marca el correo como leído al completar. | n8n · Gmail · Google Drive |
+| Workflow | Trigger | Descripción | Stack |
+|---|---|---|---|
+| [`invoice-uploader`](./invoice-uploader/README.md) | Diario 00:00 | Poller de correos fiscales en Gmail — filtro OR-regex (factura/CFDI/comprobante) → fan-out de adjuntos (nodo Code JS) → subida a Drive → marcar como leído | n8n · Gmail · Google Drive |
 
 ### Agentes
 
-| Workflow | Descripción | Stack |
-|---|---|---|
-| [`agente-calculadora`](./agents/agente-calculadora/README.md) | Agente conversacional expuesto a través de la UI de chat integrada en n8n. Usa una herramienta Calculator para aritmética y demuestra el loop de razonamiento ReAct — el modelo decide en cada turno si invocar la herramienta o responder directamente. Sin estado por diseño. | n8n · OpenAI · LangChain |
-| [`agente-investigador`](./agents/agente-investigador/README.md) | Agente investigador conversacional con recuperación en Wikipedia y una ventana de memoria de sesión. Demuestra el uso de herramientas combinado con persistencia de contexto de corto plazo entre turnos. Cada sesión del navegador mantiene su propia memoria aislada. | n8n · OpenAI · Wikipedia · LangChain |
+| Workflow | Trigger | Descripción | Stack |
+|---|---|---|---|
+| [`agente-calculadora`](./agente-calculadora/README.md) | Chat | Agente conversacional con herramienta Calculator. Demuestra el loop de razonamiento ReAct — sin estado por diseño | n8n · OpenAI · LangChain |
+| [`agente-investigador`](./agente-investigador/README.md) | Chat | Agente investigador con recuperación en Wikipedia y ventana de memoria de sesión. Demuestra uso de herramientas + persistencia de contexto de corto plazo | n8n · OpenAI · Wikipedia · LangChain |
+
+### Automatización de contenido (Multi-Agente)
+
+| Workflow | Trigger | Descripción | Stack |
+|---|---|---|---|
+| [`content-creator`](./content-creator/README.md) | Chat | Arquitectura Supervisor–Especialistas: pipeline Analista → Redactor → Editor que produce hilos de Twitter/X con bloques ≤ 280 caracteres | Claude Sonnet 4.5 · GPT-3.5 Turbo · n8n |
+| [`fact-checker`](./fact-checker/README.md) | Chat | Arquitectura de Verificación y Contraste: narrativa mediática (SerpAPI) vs. evidencia fáctica (Tavily) → auditoría lógica → veredicto con nivel de confianza | Claude Sonnet 4.5 · GPT-4o · GPT-4o Mini · SerpAPI · Tavily · n8n |
 
 ---
 
@@ -169,12 +177,30 @@ n8n-agent-flows/
 1. Descarga el archivo `.json` desde la carpeta del workflow
 2. En tu instancia de n8n: **Import** → **From File** → selecciona el `.json`
 3. Conecta tus propias credenciales (Google Drive, OpenAI, Supabase, etc.)
-4. Lee el `README.md` del workflow antes de ejecutarlo — cada uno documenta los pasos de configuración requeridos, advertencias y detalles de configuración
+4. Lee el `README.md` del workflow antes de ejecutarlo — cada uno documenta la configuración requerida, advertencias y decisiones de diseño
+
+---
+
+## Estándares de documentación
+
+Cada README de workflow sigue esta estructura:
+
+- **Overview** — qué hace el flujo y por qué existe
+- **Diagrama de arquitectura** — ASCII, distinguiendo conexiones del sub-grafo LangChain del flujo main estándar de n8n
+- **Tabla de nodos** — tipo, modelo/herramienta y rol por nodo
+- **Decisiones de diseño** — el *por qué* detrás de las decisiones arquitectónicas, no solo el *qué*
+- **Setup y credenciales** — keys y servicios requeridos
+- **Limitaciones y problemas conocidos** — con severidad codificada (🔴 crítico / 🟡 informativo)
+- **Notas didácticas** — patrones relevantes para engineers y estudiantes
+
+Idioma: bilingüe EN/ES donde el contexto se beneficia de ambos.
 
 ---
 
 ## Sobre el autor
 
 Construido por un AI & LLM Engineer con 5+ años entregando sistemas AI end-to-end: pipelines RAG, agentes conversacionales, LLMOps e interfaces de voz. Este repositorio hace visible y reutilizable la capa de orquestación — el tejido conectivo entre modelos, datos y APIs.
+
+Estos workflows también se usan como material didáctico en un diplomado de AI y automatización.
 
 [LinkedIn](https://linkedin.com/in/darioarteaga) · [GitHub](https://github.com/DarioArteaga)
