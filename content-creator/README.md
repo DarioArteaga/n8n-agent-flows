@@ -156,3 +156,7 @@ Este flujo ilustra tres patrones arquitectónicos relevantes para estudiantes de
 2. **Costo vs. calidad por capa.** No todos los nodos requieren el modelo más potente. El costo se concentra donde el razonamiento es más complejo (supervisión), no donde la tarea es más repetible.
 
 3. **System prompts como contrato.** Cada tool tiene un system prompt que define exactamente qué recibe, qué produce y en qué formato. Esto es la interfaz del agente — tan importante como la lógica del supervisor.
+
+---
+
+*Parte del repositorio [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) — una colección de workflows de n8n para sistemas AI, pipelines RAG y automatización de procesos.*

@@ -364,6 +364,7 @@ Binary data is not stored inline with execution history. Correct for large files
 | Error notifications | Add error branch → Slack/email alert on failure |
 | Multi-table routing | Add a `Switch` node to route to different tables by document type |
 
+*Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of production-grade n8n workflows for AI systems, RAG pipelines, and process automation.*
 ---
 ---
 
@@ -736,7 +737,5 @@ n8n-agent-flows/
 ```
 
 ---
-
-*Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of production-grade n8n workflows for AI systems, RAG pipelines, and process automation.*
 
 *Parte del repositorio [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) — una colección de workflows de n8n para sistemas AI, pipelines RAG y automatización de procesos.*

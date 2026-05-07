@@ -335,6 +335,8 @@ If the Drive upload fails (quota exceeded, permission error, network timeout), t
 | Reduce redundant `markAsRead` | Collect email IDs after split, deduplicate, and mark once per email |
 | Label instead of read status | Use Gmail labels as processing flags for more robust idempotency |
 
+*Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of production-grade n8n workflows for AI systems, RAG pipelines, and process automation.*
+
 ---
 ---
 
@@ -677,7 +679,5 @@ n8n-agent-flows/
 ```
 
 ---
-
-*Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of production-grade n8n workflows for AI systems, RAG pipelines, and process automation.*
 
 *Parte del repositorio [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) — una colección de workflows de n8n para sistemas AI, pipelines RAG y automatización de procesos.*

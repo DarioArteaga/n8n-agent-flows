@@ -33,6 +33,7 @@ n8n-agent-flows/
 ├── README.md
 ├── rag/
 ├── invoice-uploader/
+├── crm/
 ├── agente-calculadora/
 ├── agente-investigador/
 ├── content-creator/
@@ -56,6 +57,12 @@ Each folder contains the workflow `.json` file and a `README.md`.
 | Workflow | Trigger | Description | Stack |
 |---|---|---|---|
 | [`invoice-uploader`](./invoice-uploader/README.md) | Daily 00:00 | Gmail fiscal email poller — OR-regex filter (factura/CFDI/comprobante) → attachment fan-out (JS Code node) → Drive upload → mark as read | n8n · Gmail · Google Drive |
+
+### CRM
+
+| Workflow | Trigger | Description | Stack |
+|---|---|---|---|
+| [`basic-crm`](./crm/basic-crm/README.md) | Form | Lead capture pipeline: native form → duplicate check → AI scoring → Supabase insert → dual Gmail notification (agent + lead) | n8n · Anthropic · Supabase · Gmail |
 
 ### Agents
 
@@ -132,6 +139,7 @@ n8n-agent-flows/
 ├── README.md
 ├── rag/
 ├── invoice-uploader/
+├── crm/
 ├── agente-calculadora/
 ├── agente-investigador/
 ├── content-creator/
@@ -155,6 +163,12 @@ Cada carpeta contiene el archivo `.json` del workflow y un `README.md`.
 | Workflow | Trigger | Descripción | Stack |
 |---|---|---|---|
 | [`invoice-uploader`](./invoice-uploader/README.md) | Diario 00:00 | Poller de correos fiscales en Gmail — filtro OR-regex (factura/CFDI/comprobante) → fan-out de adjuntos (nodo Code JS) → subida a Drive → marcar como leído | n8n · Gmail · Google Drive |
+
+### CRM
+
+| Workflow | Trigger | Descripción | Stack |
+|---|---|---|---|
+| [`basic-crm`](./crm/basic-crm/README.md) | Form | Pipeline de captura de leads: formulario nativo → check de duplicados → scoring AI → insert en Supabase → notificación dual por Gmail (agente + lead) | n8n · Anthropic · Supabase · Gmail |
 
 ### Agentes
 
