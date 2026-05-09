@@ -335,6 +335,20 @@ If the Drive upload fails (quota exceeded, permission error, network timeout), t
 | Reduce redundant `markAsRead` | Collect email IDs after split, deduplicate, and mark once per email |
 | Label instead of read status | Use Gmail labels as processing flags for more robust idempotency |
 
+---
+
+## File Structure
+
+```
+n8n-agent-flows/
+└── process-automation/
+    └── invoice-uploader/
+        ├── invoice-uploader.json     # Exportable n8n workflow
+        └── README.md                 # This file
+```
+
+---
+
 *Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of production-grade n8n workflows for AI systems, RAG pipelines, and process automation.*
 
 ---
@@ -674,8 +688,8 @@ Si la subida a Drive falla (cuota excedida, error de permisos, timeout de red), 
 n8n-agent-flows/
 └── process-automation/
     └── invoice-uploader/
-        ├── invoice-uploader.json     # Exportable n8n workflow / Workflow exportable de n8n
-        └── README.md                 # This file / Este archivo
+        ├── invoice-uploader.json     # Workflow exportable de n8n
+        └── README.md                 # Este archivo
 ```
 
 ---

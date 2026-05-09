@@ -364,7 +364,22 @@ Binary data is not stored inline with execution history. Correct for large files
 | Error notifications | Add error branch → Slack/email alert on failure |
 | Multi-table routing | Add a `Switch` node to route to different tables by document type |
 
+---
+
+## File Structure
+
+```
+n8n-agent-flows/
+└── rag/
+    └── ingest_RAG/
+        ├── ingest_RAG.json     # Exportable n8n workflow
+        └── README.md           # This file
+```
+
+---
+
 *Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of production-grade n8n workflows for AI systems, RAG pipelines, and process automation.*
+
 ---
 ---
 
@@ -732,8 +747,8 @@ Los datos binarios no se almacenan en línea con el historial de ejecución. Cor
 n8n-agent-flows/
 └── rag/
     └── ingest_RAG/
-        ├── ingest_RAG.json     # Exportable n8n workflow / Workflow exportable de n8n
-        └── README.md           # This file / Este archivo
+        ├── ingest_RAG.json     # Workflow exportable de n8n
+        └── README.md           # Este archivo
 ```
 
 ---

@@ -288,6 +288,22 @@ Turn 2 is the key classroom moment. Remove the memory node, repeat the sequence,
 | Source citation in metadata | Extract Wikipedia article URL from the tool response and append it to the agent's reply |
 
 ---
+
+## File Structure
+
+```
+n8n-agent-flows/
+└── agents/
+    └── agente-investigador/
+        ├── agente-investigador.json     # Exportable n8n workflow
+        └── README.md                    # This file
+```
+
+---
+
+*Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of n8n workflows for AI systems, RAG pipelines, and process automation.*
+
+---
 ---
 
 <a name="español"></a>
@@ -577,12 +593,10 @@ El turno 2 es el momento clave de la clase. Quitar el nodo de memoria, repetir l
 n8n-agent-flows/
 └── agents/
     └── agente-investigador/
-        ├── agente-investigador.json     # Exportable n8n workflow / Workflow exportable de n8n
-        └── README.md                    # This file / Este archivo
+        ├── agente-investigador.json     # Workflow exportable de n8n
+        └── README.md                    # Este archivo
 ```
 
 ---
-
-*Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of n8n workflows for AI systems, RAG pipelines, and process automation.*
 
 *Parte del repositorio [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) — una colección de workflows de n8n para sistemas AI, pipelines RAG y automatización de procesos.*

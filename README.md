@@ -33,7 +33,7 @@ n8n-agent-flows/
 ├── README.md
 ├── rag/
 ├── invoice-uploader/
-├── crm/
+├── basic-crm/
 ├── agente-calculadora/
 ├── agente-investigador/
 ├── content-creator/
@@ -62,7 +62,7 @@ Each folder contains the workflow `.json` file and a `README.md`.
 
 | Workflow | Trigger | Description | Stack |
 |---|---|---|---|
-| [`basic-crm`](./crm/basic-crm/README.md) | Form | Lead capture pipeline: native form → duplicate check → AI scoring → Supabase insert → dual Gmail notification (agent + lead) | n8n · Anthropic · Supabase · Gmail |
+| [`basic-crm`](./basic-crm/README.md) | Form | Lead capture pipeline: native form → duplicate check → AI scoring → Supabase insert → dual Gmail notification (agent + lead) | n8n · Anthropic · Supabase · Gmail |
 
 ### Agents
 
@@ -100,8 +100,9 @@ Every workflow README follows this structure:
 - **Setup & Credentials** — required keys and services
 - **Limitations & Known Issues** — severity-coded (🔴 critical / 🟡 advisory)
 - **Didactic Notes** — patterns worth studying for engineers and students
+- **File Structure** — repository path and exported files
 
-Language: bilingual EN/ES where context benefits from both.
+Language: bilingual EN/ES. Full split-section format (EN section → ES section) for standalone workflows; mixed inline format for multi-agent pipelines.
 
 ---
 
@@ -139,7 +140,7 @@ n8n-agent-flows/
 ├── README.md
 ├── rag/
 ├── invoice-uploader/
-├── crm/
+├── basic-crm/
 ├── agente-calculadora/
 ├── agente-investigador/
 ├── content-creator/
@@ -168,7 +169,7 @@ Cada carpeta contiene el archivo `.json` del workflow y un `README.md`.
 
 | Workflow | Trigger | Descripción | Stack |
 |---|---|---|---|
-| [`basic-crm`](./crm/basic-crm/README.md) | Form | Pipeline de captura de leads: formulario nativo → check de duplicados → scoring AI → insert en Supabase → notificación dual por Gmail (agente + lead) | n8n · Anthropic · Supabase · Gmail |
+| [`basic-crm`](./basic-crm/README.md) | Form | Pipeline de captura de leads: formulario nativo → check de duplicados → scoring AI → insert en Supabase → notificación dual por Gmail (agente + lead) | n8n · Anthropic · Supabase · Gmail |
 
 ### Agentes
 
@@ -206,8 +207,9 @@ Cada README de workflow sigue esta estructura:
 - **Setup y credenciales** — keys y servicios requeridos
 - **Limitaciones y problemas conocidos** — con severidad codificada (🔴 crítico / 🟡 informativo)
 - **Notas didácticas** — patrones relevantes para engineers y estudiantes
+- **Estructura de archivos** — ruta en el repositorio y archivos exportados
 
-Idioma: bilingüe EN/ES donde el contexto se beneficia de ambos.
+Idioma: bilingüe EN/ES. Formato de secciones separadas (sección EN → sección ES) para workflows individuales; formato mixto inline para pipelines multi-agente.
 
 ---
 

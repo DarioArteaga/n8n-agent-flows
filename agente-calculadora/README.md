@@ -258,6 +258,22 @@ The hosted chat page is served by the n8n instance and requires the workflow to 
 | Multilingual system prompt | Remove `Responde siempre en espanol` and observe how the agent mirrors the user's language |
 
 ---
+
+## File Structure
+
+```
+n8n-agent-flows/
+└── agents/
+    └── agente-calculadora/
+        ├── agente-calculadora.json     # Exportable n8n workflow
+        └── README.md                   # This file
+```
+
+---
+
+*Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of n8n workflows for AI systems, RAG pipelines, and process automation.*
+
+---
 ---
 
 <a name="español"></a>
@@ -517,12 +533,10 @@ La página de chat está servida por la instancia de n8n y requiere que el workf
 n8n-agent-flows/
 └── agents/
     └── agente-calculadora/
-        ├── agente-calculadora.json     # Exportable n8n workflow / Workflow exportable de n8n
-        └── README.md                   # This file / Este archivo
+        ├── agente-calculadora.json     # Workflow exportable de n8n
+        └── README.md                   # Este archivo
 ```
 
 ---
-
-*Part of the [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) repository — a collection of n8n workflows for AI systems, RAG pipelines, and process automation.*
 
 *Parte del repositorio [`n8n-agent-flows`](https://github.com/DarioArteaga/n8n-agent-flows) — una colección de workflows de n8n para sistemas AI, pipelines RAG y automatización de procesos.*
